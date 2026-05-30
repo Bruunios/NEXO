@@ -1,0 +1,489 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Termos de Uso — NEXO</title>
+  <link rel="icon" href="fotos/nexo1.png" type="image/png">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #ffffff;
+      --bg-2:       #f4f6fb;
+      --bg-3:       #eaeff7;
+      --surface:    rgba(13,107,104,.04);
+      --border:     rgba(13,107,104,.12);
+      --blue:       #0d6b68;
+      --blue-dim:   rgba(13,107,104,.10);
+      --blue-glow:  rgba(13,107,104,.30);
+      --text:       #0f172a;
+      --muted:      #64748b;
+      --radius-lg:  20px;
+      --radius-md:  14px;
+      --radius-sm:  10px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ── Nav ── */
+    .main-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 62px;
+      background: rgba(255,255,255,.92);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+    }
+    .nav-brand {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -.02em;
+    }
+    .nav-back {
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .nav-back a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .nav-back a:hover { color: var(--text); }
+
+    /* ── Hero strip ── */
+    .doc-hero {
+      padding: 120px 24px 56px;
+      text-align: center;
+      background: var(--bg-2);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .doc-hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 600px; height: 300px;
+      background: radial-gradient(ellipse at 50% 0%, rgba(13,107,104,.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .doc-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--blue);
+      background: var(--blue-dim);
+      border: 1px solid rgba(13,107,104,.2);
+      margin-bottom: 20px;
+    }
+    .doc-hero h1 {
+      font-size: clamp(28px, 5vw, 42px);
+      font-weight: 800;
+      letter-spacing: -.03em;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+    .doc-hero p {
+      font-size: 15px;
+      color: var(--muted);
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* ── Doc layout ── */
+    .doc-layout {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 64px 24px 96px;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 56px;
+      align-items: start;
+    }
+
+    /* ── Sidebar TOC ── */
+    .doc-toc {
+      position: sticky;
+      top: 82px;
+    }
+    .toc-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .toc-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .toc-list a {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 5px 10px;
+      border-radius: 7px;
+      transition: background .15s, color .15s;
+      line-height: 1.4;
+    }
+    .toc-list a:hover {
+      background: var(--surface);
+      color: var(--text);
+    }
+    .toc-list a.active {
+      background: var(--blue-dim);
+      color: var(--blue);
+      font-weight: 600;
+    }
+
+    /* ── Doc content ── */
+    .doc-content {
+      min-width: 0;
+    }
+    .doc-section {
+      margin-bottom: 52px;
+      scroll-margin-top: 82px;
+    }
+    .doc-section h2 {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -.02em;
+      color: var(--text);
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .doc-section h2 .sec-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px; height: 26px;
+      border-radius: 7px;
+      background: var(--blue-dim);
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .doc-section p {
+      font-size: 15px;
+      color: #334155;
+      line-height: 1.8;
+      margin-bottom: 14px;
+    }
+    .doc-section p:last-child { margin-bottom: 0; }
+    .doc-section ul, .doc-section ol {
+      padding-left: 20px;
+      margin-bottom: 14px;
+    }
+    .doc-section li {
+      font-size: 15px;
+      color: #334155;
+      line-height: 1.8;
+      margin-bottom: 6px;
+    }
+    .doc-section strong { color: var(--text); font-weight: 600; }
+    .doc-section a { color: var(--blue); text-decoration: none; }
+    .doc-section a:hover { text-decoration: underline; }
+
+    .doc-callout {
+      background: var(--blue-dim);
+      border: 1px solid rgba(13,107,104,.2);
+      border-left: 3px solid var(--blue);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 14px 18px;
+      margin: 18px 0;
+      font-size: 14px;
+      color: #1e3a8a;
+      line-height: 1.7;
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 36px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--text); font-weight: 700; font-size: 15px; }
+    .footer-copy { font-size: 13px; color: var(--muted); }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-size: 13px; color: var(--muted); text-decoration: none; transition: color .2s; }
+    .footer-links a:hover { color: var(--text); }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .main-nav { padding: 0 18px; }
+      .doc-layout { grid-template-columns: 1fr; gap: 32px; padding-top: 40px; }
+      .doc-toc { display: none; }
+      footer { flex-direction: column; text-align: center; }
+      .footer-links { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Nav ── -->
+<nav class="main-nav">
+  <a href="index.html" class="nav-brand">
+    <svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <rect width="32" height="32" rx="8" fill="#0d6b68"/>
+      <circle cx="8" cy="16" r="3" fill="#f5c53a"/>
+      <circle cx="16" cy="8" r="3" fill="white"/>
+      <circle cx="24" cy="16" r="3" fill="white"/>
+      <circle cx="16" cy="24" r="3" fill="white"/>
+      <line x1="8" y1="16" x2="16" y2="8" stroke="white" stroke-width="1.5" stroke-opacity=".5"/>
+      <line x1="16" y1="8" x2="24" y2="16" stroke="white" stroke-width="1.5" stroke-opacity=".5"/>
+      <line x1="24" y1="16" x2="16" y2="24" stroke="white" stroke-width="1.5" stroke-opacity=".5"/>
+      <line x1="16" y1="24" x2="8" y2="16" stroke="white" stroke-width="1.5" stroke-opacity=".5"/>
+    </svg>
+    NEXO
+  </a>
+  <div class="nav-back">
+    <a href="index.html">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M19 12H5M12 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Voltar
+    </a>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<div class="doc-hero">
+  <div class="doc-tag">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    Documento legal
+  </div>
+  <h1>Termos de Uso</h1>
+  <p>Ultima atualizacao: 25 de maio de 2025. Leia com atencao antes de usar o NEXO.</p>
+</div>
+
+<!-- ── Doc layout ── -->
+<div class="doc-layout">
+
+  <!-- Sidebar TOC -->
+  <nav class="doc-toc" aria-label="Sumario">
+    <div class="toc-label">Sumario</div>
+    <ul class="toc-list">
+      <li><a href="#aceitacao">1. Aceitacao</a></li>
+      <li><a href="#servico">2. Descricao do servico</a></li>
+      <li><a href="#conta">3. Conta de usuario</a></li>
+      <li><a href="#uso-permitido">4. Uso permitido</a></li>
+      <li><a href="#uso-proibido">5. Uso proibido</a></li>
+      <li><a href="#conteudo">6. Conteudo do usuario</a></li>
+      <li><a href="#propriedade">7. Propriedade intelectual</a></li>
+      <li><a href="#responsabilidade">8. Limitacao de responsabilidade</a></li>
+      <li><a href="#suspensao">9. Suspensao e encerramento</a></li>
+      <li><a href="#alteracoes">10. Alteracoes nos termos</a></li>
+      <li><a href="#contato">11. Contato</a></li>
+    </ul>
+  </nav>
+
+  <!-- Content -->
+  <main class="doc-content">
+
+    <div class="doc-callout">
+      Ao criar uma conta ou usar o NEXO, voce concorda integralmente com estes Termos de Uso. Se nao concordar com qualquer parte, nao utilize o servico.
+    </div>
+
+    <div class="doc-section" id="aceitacao">
+      <h2><span class="sec-num">1</span> Aceitacao dos Termos</h2>
+      <p>Estes Termos de Uso ("Termos") regem o acesso e uso da plataforma NEXO ("Plataforma"), disponibilizada por NEXO Tecnologia Social Ltda. ("NEXO", "nos"), incluindo o site, aplicativo e demais servicos associados.</p>
+      <p>Ao acessar ou usar a Plataforma, voce ("Usuario") declara ter lido, compreendido e aceito estes Termos, bem como a nossa <a href="privacidade.html">Politica de Privacidade</a>. Usuarios menores de 18 anos devem ter consentimento de um responsavel legal.</p>
+    </div>
+
+    <div class="doc-section" id="servico">
+      <h2><span class="sec-num">2</span> Descricao do Servico</h2>
+      <p>O NEXO e uma plataforma digital de carater social que conecta doadores de leite a pontos de coleta cadastrados no Brasil. Os principais recursos incluem:</p>
+      <ul>
+        <li>Busca de pontos de coleta de leite por CEP ou localizacao;</li>
+        <li>Exibicao de informacoes sobre horarios, disponibilidade e contato dos pontos;</li>
+        <li>Painel pessoal para acompanhamento de doacoes e impacto;</li>
+        <li>Cadastro e gerenciamento de pontos de coleta por instituicoes parceiras.</li>
+      </ul>
+      <p>O NEXO <strong>nao intermedia a doacao diretamente</strong>, nao realiza coleta, transporte ou armazenamento de leite, e nao se responsabiliza pelas operacoes realizadas nos pontos cadastrados.</p>
+    </div>
+
+    <div class="doc-section" id="conta">
+      <h2><span class="sec-num">3</span> Conta de Usuario</h2>
+      <p>Para acessar funcionalidades completas da Plataforma, e necessario criar uma conta. Ao se cadastrar, voce se compromete a:</p>
+      <ul>
+        <li>Fornecer informacoes verdadeiras, precisas e atualizadas;</li>
+        <li>Manter a confidencialidade de sua senha e nao compartilha-la com terceiros;</li>
+        <li>Notificar o NEXO imediatamente em caso de uso nao autorizado de sua conta.</li>
+      </ul>
+      <p>Voce e responsavel por todas as atividades realizadas com suas credenciais. O NEXO nao sera responsavel por perdas decorrentes do uso nao autorizado de sua conta quando houver negligencia de sua parte na guarda das credenciais.</p>
+    </div>
+
+    <div class="doc-section" id="uso-permitido">
+      <h2><span class="sec-num">4</span> Uso Permitido</h2>
+      <p>A Plataforma e disponibilizada exclusivamente para fins pessoais, nao comerciais e sociais. E permitido:</p>
+      <ul>
+        <li>Buscar e visualizar pontos de coleta de leite;</li>
+        <li>Registrar e acompanhar suas doacoes pessoais;</li>
+        <li>Compartilhar informacoes sobre pontos de coleta em redes sociais;</li>
+        <li>Cadastrar pontos de coleta, mediante aprovacao previa do NEXO, se voce representa uma instituicao parceira.</li>
+      </ul>
+    </div>
+
+    <div class="doc-section" id="uso-proibido">
+      <h2><span class="sec-num">5</span> Uso Proibido</h2>
+      <p>E expressamente proibido ao Usuario:</p>
+      <ul>
+        <li>Usar a Plataforma para fins comerciais sem autorizacao expressa do NEXO;</li>
+        <li>Cadastrar informacoes falsas, enganosas ou fraudulentas;</li>
+        <li>Realizar engenharia reversa, decompilacao ou desmontagem da Plataforma;</li>
+        <li>Utilizar robos, scrapers ou mecanismos automatizados para acessar ou coletar dados;</li>
+        <li>Interferir no funcionamento da Plataforma ou sobrecarregar seus servidores;</li>
+        <li>Tentar acessar contas, sistemas ou redes sem autorizacao;</li>
+        <li>Publicar conteudo ofensivo, discriminatorio, ilegal ou que viole direitos de terceiros.</li>
+      </ul>
+      <p>A violacao destas proibicoes podera resultar em suspensao ou exclusao imediata da conta, sem prejuizo das medidas legais cabiveis.</p>
+    </div>
+
+    <div class="doc-section" id="conteudo">
+      <h2><span class="sec-num">6</span> Conteudo do Usuario</h2>
+      <p>Ao submeter conteudo na Plataforma (como avaliacoes, fotos ou informacoes de pontos), voce concede ao NEXO uma licenca nao exclusiva, gratuita, mundial e transferivel para usar, reproduzir, modificar e distribuir esse conteudo para fins de operacao e melhoria do servico.</p>
+      <p>Voce declara ser o titular ou ter os direitos necessarios sobre o conteudo submetido, e que ele nao viola direitos de terceiros, leis aplicaveis ou estes Termos.</p>
+    </div>
+
+    <div class="doc-section" id="propriedade">
+      <h2><span class="sec-num">7</span> Propriedade Intelectual</h2>
+      <p>Todo o conteudo da Plataforma — incluindo marca, logotipos, design, textos, codigo-fonte, interfaces e elementos graficos — e de propriedade exclusiva do NEXO ou de seus licenciantes, protegido pela legislacao brasileira de propriedade intelectual (Lei 9.279/96 e Lei 9.609/98).</p>
+      <p>E vedada qualquer reproducao, distribuicao ou uso comercial sem autorizacao previa por escrito do NEXO.</p>
+    </div>
+
+    <div class="doc-section" id="responsabilidade">
+      <h2><span class="sec-num">8</span> Limitacao de Responsabilidade</h2>
+      <p>O NEXO nao se responsabiliza por:</p>
+      <ul>
+        <li>A qualidade, seguranca ou disponibilidade dos pontos de coleta listados;</li>
+        <li>Danos diretos, indiretos, incidentais ou consequenciais decorrentes do uso ou impossibilidade de uso da Plataforma;</li>
+        <li>Interrupcoes temporarias do servico por manutencao, falhas tecnicas ou casos fortuitos;</li>
+        <li>Conteudo publicado por usuarios ou instituicoes parceiras.</li>
+      </ul>
+      <div class="doc-callout">
+        A Plataforma e fornecida "como esta", sem garantias de qualquer natureza, expressas ou implicitas, na maxima extensao permitida pela legislacao aplicavel.
+      </div>
+    </div>
+
+    <div class="doc-section" id="suspensao">
+      <h2><span class="sec-num">9</span> Suspensao e Encerramento</h2>
+      <p>O NEXO reserva-se o direito de suspender ou encerrar sua conta, a qualquer momento e sem aviso previo, caso haja violacao destes Termos, conduta prejudicial a outros usuarios ou ao servico, ou por determinacao legal ou judicial.</p>
+      <p>Voce pode encerrar sua conta a qualquer momento acessando as configuracoes ou enviando solicitacao para <strong>suporte@nexo.app</strong>. Apos o encerramento, seus dados serao tratados conforme nossa <a href="privacidade.html">Politica de Privacidade</a>.</p>
+    </div>
+
+    <div class="doc-section" id="alteracoes">
+      <h2><span class="sec-num">10</span> Alteracoes nos Termos</h2>
+      <p>O NEXO pode atualizar estes Termos periodicamente. Alteracoes relevantes serao comunicadas por e-mail ou notificacao na Plataforma com pelo menos 15 dias de antecedencia.</p>
+      <p>O uso continuado da Plataforma apos a entrada em vigor das alteracoes constitui aceitacao dos novos Termos.</p>
+    </div>
+
+    <div class="doc-section" id="contato">
+      <h2><span class="sec-num">11</span> Contato</h2>
+      <p>Para duvidas, solicitacoes ou reclamacoes relacionadas a estes Termos, entre em contato:</p>
+      <ul>
+        <li><strong>E-mail:</strong> juridico@nexo.app</li>
+        <li><strong>Suporte:</strong> suporte@nexo.app</li>
+        <li><strong>Endereco:</strong> NEXO Tecnologia Social Ltda., Sao Paulo – SP, Brasil</li>
+      </ul>
+      <p>Estes Termos sao regidos pelas leis da Republica Federativa do Brasil. Fica eleito o foro da comarca de Sao Paulo – SP para dirimir quaisquer controversias.</p>
+    </div>
+
+  </main>
+</div>
+
+<!-- ── Footer ── -->
+<footer>
+  <a href="index.html" class="footer-brand">
+    <svg width="22" height="22" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <rect width="32" height="32" rx="8" fill="#0d6b68"/>
+      <circle cx="8" cy="16" r="3" fill="#f5c53a"/>
+      <circle cx="16" cy="8" r="3" fill="white"/>
+      <circle cx="24" cy="16" r="3" fill="white"/>
+      <circle cx="16" cy="24" r="3" fill="white"/>
+      <line x1="8" y1="16" x2="16" y2="8" stroke="white" stroke-width="1.5" stroke-opacity=".5"/>
+      <line x1="16" y1="8" x2="24" y2="16" stroke="white" stroke-width="1.5" stroke-opacity=".5"/>
+      <line x1="24" y1="16" x2="16" y2="24" stroke="white" stroke-width="1.5" stroke-opacity=".5"/>
+      <line x1="16" y1="24" x2="8" y2="16" stroke="white" stroke-width="1.5" stroke-opacity=".5"/>
+    </svg>
+    NEXO
+  </a>
+  <span class="footer-copy">2025 NEXO — Conectando doadores de leite no Brasil</span>
+  <div class="footer-links">
+    <a href="privacidade.html">Privacidade</a>
+    <a href="termos.html" style="color:var(--blue)">Termos</a>
+    <a href="#">Contato</a>
+  </div>
+</footer>
+
+<script>
+  // Highlight active TOC item on scroll
+  const sections = document.querySelectorAll('.doc-section');
+  const links    = document.querySelectorAll('.toc-list a');
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.toc-list a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  sections.forEach(s => obs.observe(s));
+</script>
+
+</body>
+</html>

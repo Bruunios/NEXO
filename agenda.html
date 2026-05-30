@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agenda — NEXO</title>
+  <link rel="icon" href="fotos/nexo1.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #ffffff;
+      --bg-2:       #f3f9f8;
+      --bg-3:       #e5f4f3;
+      --border:     rgba(13,107,104,.12);
+      --border-cal: #e2e8f0;
+      --blue:       #0d6b68;
+      --blue-dim:   rgba(13,107,104,.10);
+      --blue-glow:  rgba(13,107,104,.30);
+      --accent:     #f5c53a;
+      --accent-dim: rgba(245,197,58,.15);
+      --text:       #0f172a;
+      --muted:      #64748b;
+      --error:      #ef4444;
+      --radius-lg:  20px;
+      --radius-md:  14px;
+      --radius-sm:  10px;
+      --sidebar-w:  240px;
+      --navbar-h:   64px;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ══════════════════════════════════
+       NAVBAR
+    ══════════════════════════════════ */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: var(--navbar-h);
+      background: linear-gradient(180deg, #fafffe 0%, #edf9f8 100%);
+      border-bottom: 2px solid rgba(13,107,104,.14);
+      display: flex; align-items: center;
+      padding: 0 28px; z-index: 50;
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; color: var(--text);
+      font-weight: 900; font-size: 18px; letter-spacing: -.02em;
+      flex-shrink: 0; margin-right: 24px;
+    }
+    .nav-links { display: flex; align-items: center; gap: 2px; flex: 1; }
+    .nav-link {
+      display: flex; align-items: center; gap: 7px;
+      padding: 8px 14px; border-radius: 12px;
+      text-decoration: none; color: var(--muted);
+      font-size: 14px; font-weight: 700;
+      transition: background .18s, color .18s; white-space: nowrap;
+    }
+    .nav-link:hover { background: var(--bg-3); color: var(--blue); }
+    .nav-link.active { background: var(--blue); color: #fff; font-weight: 800; box-shadow: 0 4px 14px rgba(13,107,104,.3); }
+    .nav-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; margin-left: 16px; position: relative; }
+    .nav-hamburger {
+      display: none; width: 38px; height: 38px;
+      border: 2px solid rgba(13,107,104,.12); border-radius: 12px;
+      background: transparent; cursor: pointer;
+      align-items: center; justify-content: center; color: var(--muted); flex-shrink: 0;
+    }
+    @media (max-width: 768px) {
+      .navbar { padding: 0 16px; }
+      .nav-links {
+        display: none; position: fixed;
+        top: var(--navbar-h); left: 0; right: 0;
+        background: #fafffe; border-bottom: 2px solid rgba(13,107,104,.14);
+        flex-direction: column; padding: 12px 16px 16px; gap: 4px;
+        box-shadow: 0 8px 24px rgba(13,107,104,.1); z-index: 49;
+      }
+      .nav-links.open { display: flex; }
+      .nav-link { padding: 11px 14px; font-size: 15px; }
+      .nav-hamburger { display: flex; }
+    }
+
+    /* ══════════════════════════════════
+       MAIN
+    ══════════════════════════════════ */
+    .main {
+      margin-top: var(--navbar-h);
+      height: calc(100vh - var(--navbar-h));
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Calendar topbar ── */
+    .cal-topbar {
+      height: 60px;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--border-cal);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+      background: var(--bg);
+    }
+
+    .btn-today {
+      height: 34px;
+      padding: 0 16px;
+      border: 1px solid var(--border-cal);
+      border-radius: 8px;
+      background: transparent;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      font-family: inherit;
+      transition: background .15s;
+      white-space: nowrap;
+    }
+    .btn-today:hover { background: var(--bg-2); }
+
+    .nav-arrow {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--muted);
+      transition: background .15s, color .15s;
+    }
+    .nav-arrow:hover { background: var(--bg-2); color: var(--text); }
+
+    .month-title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .topbar-sep {
+      flex: 1;
+    }
+
+    .contacts-strip {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .contact-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .contact-pill strong { color: var(--text); font-weight: 600; }
+
+    .icon-btn {
+      width: 36px; height: 36px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--muted);
+      transition: all .15s;
+      text-decoration: none;
+    }
+    .icon-btn:hover { background: var(--bg-2); color: var(--text); }
+
+    .notif-dot { position: relative; }
+    .notif-dot::after {
+      content: '';
+      position: absolute;
+      top: 6px; right: 7px;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--blue);
+      border: 1.5px solid var(--bg);
+    }
+
+    /* ── Weekday header row ── */
+    .cal-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      border-bottom: 1px solid var(--border-cal);
+      flex-shrink: 0;
+      background: var(--bg);
+    }
+
+    .cal-wday {
+      padding: 8px 0;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── Calendar grid ── */
+    .cal-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      grid-template-rows: repeat(6, 1fr);
+      overflow: hidden;
+    }
+
+    .cal-cell {
+      border-right: 1px solid var(--border-cal);
+      border-bottom: 1px solid var(--border-cal);
+      padding: 6px 8px;
+      overflow: hidden;
+      cursor: default;
+      transition: background .1s;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .cal-cell:nth-child(7n)     { border-right: none; }
+    .cal-cell:nth-last-child(-n+7) { border-bottom: none; }
+    .cal-cell:hover { background: #f8faff; }
+    .cal-cell.empty { background: #fafbfc; cursor: default; }
+    .cal-cell.empty:hover { background: #fafbfc; }
+    .cal-cell.today-col { background: #f0f9f8; }
+
+    .day-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      flex-shrink: 0;
+      align-self: flex-start;
+    }
+    .day-num.today {
+      background: var(--blue);
+      color: #fff;
+      font-weight: 700;
+    }
+    .day-num.weekend { color: var(--muted); }
+
+    /* ── Event chips ── */
+    .event-chip {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 8px 2px 6px;
+      border-radius: 4px;
+      font-size: 11.5px;
+      font-weight: 600;
+      line-height: 1.5;
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: filter .12s, opacity .12s;
+      max-width: 100%;
+    }
+    .event-chip:hover { filter: brightness(.92); }
+
+    .event-chip.accent {
+      background: var(--accent);
+      color: #5a3a00;
+    }
+    .event-chip.teal {
+      background: var(--blue);
+      color: #fff;
+    }
+    .event-chip.teal-soft {
+      background: rgba(13,107,104,.12);
+      color: var(--blue);
+    }
+
+    .chip-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .accent .chip-dot { background: #a07800; }
+    .teal .chip-dot   { background: rgba(255,255,255,.6); }
+    .teal-soft .chip-dot { background: var(--blue); }
+
+    /* ── Event detail popover ── */
+    .popover {
+      position: fixed;
+      background: var(--bg);
+      border: 1px solid var(--border-cal);
+      border-radius: var(--radius-md);
+      box-shadow: 0 8px 30px rgba(15,23,42,.14), 0 2px 8px rgba(15,23,42,.06);
+      padding: 16px 18px;
+      width: 260px;
+      z-index: 100;
+      display: none;
+    }
+    .popover.open { display: block; }
+    .popover-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+    .popover-sub {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .popover-tag {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 9px;
+      border-radius: 100px;
+    }
+    .popover-tag.accent { background: var(--accent-dim); color: #a07800; }
+    .popover-tag.teal   { background: var(--blue-dim); color: var(--blue); }
+    .popover-close {
+      position: absolute;
+      top: 10px; right: 10px;
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+    }
+    .popover-close:hover { background: var(--bg-2); }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .contacts-strip { display: none; }
+    }
+    @media (max-width: 680px) {
+      .sidebar { display: none; }
+      .event-chip { font-size: 10px; padding: 1px 5px; }
+      .month-title { font-size: 16px; }
+    }
+
+    /* ═══════════════════════════════════════════
+       ESTILO ANIMADO — NEXO
+    ═══════════════════════════════════════════ */
+    body { font-family: 'Nunito', system-ui, sans-serif; }
+    :root { --radius-lg: 24px; --radius-md: 18px; --radius-sm: 14px; }
+
+    @keyframes bounce-in { 0%{opacity:0;transform:scale(.75) translateY(16px)} 65%{transform:scale(1.05) translateY(-3px)} 100%{opacity:1;transform:scale(1) translateY(0)} }
+
+    /* Sidebar */
+    .sidebar { background: linear-gradient(180deg, #fafffe 0%, #edf9f8 100%); border-right: 2px solid rgba(13,107,104,.14); }
+    .sidebar-brand { font-weight: 900; font-size: 18px; }
+    .nav-section-label { font-size: 11px; font-weight: 800; color: #b2cac9; }
+    .nav-item { font-weight: 700; border-radius: 14px; transition: background .18s, color .18s, transform .2s cubic-bezier(.34,1.56,.64,1); }
+    .nav-item:hover { background: var(--bg-3); color: var(--blue); transform: translateX(5px); }
+    .nav-item.active { background: var(--blue); color: #fff; font-weight: 800; box-shadow: 0 4px 14px rgba(13,107,104,.35); }
+    .nav-item.active svg { color: #fff; }
+    .user-avatar { background: linear-gradient(135deg, #0d6b68, #3dbdbd) !important; color: #fff !important; border: none !important; font-weight: 900 !important; border-radius: 10px; }
+    .user-card { border-radius: 14px; }
+    .user-name { font-weight: 800; }
+    .sidebar-footer { border-top: 2px solid rgba(13,107,104,.1); }
+    .user-menu { border-radius: 18px !important; border: 2px solid rgba(13,107,104,.1) !important; box-shadow: 0 8px 32px rgba(13,107,104,.12) !important; }
+    .menu-item { font-weight: 700; border-radius: 12px; }
+
+    /* Topbar do calendario */
+    .cal-topbar { border-bottom: 2px solid var(--border-cal) !important; }
+    .month-title { font-weight: 900 !important; font-size: 20px !important; }
+
+    /* Botoes da agenda */
+    .cal-btn { border-radius: 12px !important; border: 2px solid rgba(13,107,104,.15) !important; font-weight: 700 !important; transition: transform .18s cubic-bezier(.34,1.56,.64,1), background .15s !important; }
+    .cal-btn:hover { transform: scale(1.06) !important; background: var(--bg-3) !important; border-color: rgba(13,107,104,.3) !important; color: var(--blue) !important; }
+    .cal-btn.today-btn { background: var(--blue) !important; color: #fff !important; border: none !important; box-shadow: 0 3px 0 #094e4c, 0 6px 16px rgba(13,107,104,.25) !important; }
+    .cal-btn.today-btn:hover { transform: translateY(-2px) !important; box-shadow: 0 5px 0 #094e4c, 0 10px 20px rgba(13,107,104,.25) !important; }
+
+    /* Chips dos eventos */
+    .event-chip { border-radius: 8px !important; font-weight: 800 !important; transition: transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .15s !important; }
+    .event-chip:hover { transform: scale(1.05) translateY(-1px) !important; box-shadow: 0 3px 8px rgba(13,107,104,.2) !important; }
+    .event-chip.accent { box-shadow: 0 2px 0 #c79010 !important; }
+    .event-chip.teal { box-shadow: 0 2px 0 #094e4c !important; }
+
+    /* Numero do dia atual */
+    .day-num.today { box-shadow: 0 3px 0 #094e4c !important; font-weight: 900 !important; }
+
+    /* Cabecalho dos dias */
+    .cal-weekday { font-weight: 800 !important; font-size: 12px !important; }
+
+    /* Popover */
+    .popover { border-radius: 18px !important; border: 2px solid rgba(13,107,104,.12) !important; box-shadow: 0 8px 0 rgba(13,107,104,.1), 0 16px 40px rgba(13,107,104,.15) !important; }
+    .popover-title { font-weight: 900 !important; font-size: 15px !important; }
+
+    /* Contatos */
+    .contacts-strip { font-weight: 700 !important; }
+
+    /* Icon buttons */
+    .icon-btn { border-radius: 12px !important; border: 2px solid rgba(13,107,104,.12) !important; transition: transform .18s cubic-bezier(.34,1.56,.64,1) !important; }
+    .icon-btn:hover { transform: scale(1.1) !important; background: var(--bg-3) !important; color: var(--blue) !important; }
+
+    /* ── Painel lateral direito ── */
+    .cal-body { display: flex; flex: 1; overflow: hidden; min-height: 0; }
+    .cal-area { display: flex; flex-direction: column; flex: 1; min-width: 0; overflow: hidden; }
+
+    .detail-panel {
+      width: 272px;
+      flex-shrink: 0;
+      border-left: 2px solid rgba(13,107,104,.1);
+      background: linear-gradient(180deg, #fafffe 0%, #edf9f8 100%);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      padding: 20px 16px;
+      gap: 6px;
+    }
+
+    .panel-heading {
+      font-size: 11px;
+      font-weight: 800;
+      color: #b2cac9;
+      text-transform: uppercase;
+      letter-spacing: .09em;
+      padding: 4px 4px 8px;
+    }
+
+    .panel-event-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: background .15s, transform .2s cubic-bezier(.34,1.56,.64,1);
+    }
+    .panel-event-item:hover { background: var(--bg-3); transform: translateX(4px); }
+    .panel-event-item.selected { background: var(--blue-dim); }
+
+    .panel-event-dot {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .panel-event-dot.accent { background: var(--accent); border: 1.5px solid #c79010; }
+    .panel-event-dot.teal   { background: var(--blue); }
+    .panel-event-dot.teal-soft { background: rgba(13,107,104,.4); }
+
+    .panel-event-info { flex: 1; min-width: 0; }
+    .panel-event-name { font-size: 12.5px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .panel-event-date { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+    .panel-divider { height: 1px; background: rgba(13,107,104,.1); margin: 8px 0; }
+
+    .panel-detail {
+      border-radius: 18px;
+      padding: 16px;
+      background: var(--bg);
+      border: 2px solid rgba(13,107,104,.12);
+      box-shadow: 0 4px 0 rgba(13,107,104,.08), 0 8px 24px rgba(13,107,104,.06);
+      display: none;
+      margin-top: 4px;
+      animation: bounce-in .3s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    .panel-detail.visible { display: block; }
+    .panel-detail-tag {
+      display: inline-block;
+      font-size: 11px; font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 100px;
+      margin-bottom: 10px;
+    }
+    .panel-detail-tag.accent { background: var(--accent-dim); color: #a07800; }
+    .panel-detail-tag.teal   { background: var(--blue-dim); color: var(--blue); }
+    .panel-detail-title { font-size: 14px; font-weight: 900; margin-bottom: 8px; line-height: 1.35; color: var(--text); }
+    .panel-detail-sub { font-size: 12.5px; color: var(--muted); line-height: 1.65; }
+    .panel-detail-btn {
+      display: block;
+      width: 100%;
+      margin-top: 14px;
+      padding: 10px;
+      border-radius: 12px;
+      border: none;
+      background: var(--blue);
+      color: #fff;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #094e4c;
+      transition: transform .12s, box-shadow .12s;
+    }
+    .panel-detail-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 0 #094e4c; }
+    .panel-detail-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #094e4c; }
+
+    @media (max-width: 1024px) { .detail-panel { width: 220px; } }
+    @media (max-width: 820px)  { .detail-panel { display: none; } }
+  </style>
+</head>
+<body>
+
+<!-- ═══ NAVBAR ═══ -->
+<nav class="navbar">
+  <a href="index.html" class="nav-brand">
+    <img src="fotos/nexo1.png" width="28" height="28" alt="NEXO" style="border-radius:8px;display:block">
+    NEXO
+  </a>
+  <div class="nav-links" id="nav-links">
+    <a href="home.html" class="nav-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 21V12h6v9" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      Inicio
+    </a>
+    <a href="pontos-doacao.html" class="nav-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="9" r="2.5" stroke="currentColor" stroke-width="1.8"/></svg>
+      Pontos de Doacao
+    </a>
+    <a href="doacao.html" class="nav-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      Fazer Doacao
+    </a>
+    <a href="agenda.html" class="nav-link active">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9h18" stroke="currentColor" stroke-width="1.8"/><path d="M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      Agenda
+    </a>
+  </div>
+  <div class="nav-right">
+    <a href="privacidade.html" class="nav-link">Privacidade</a>
+    <a href="termos.html" class="nav-link">Termos de uso</a>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu" aria-expanded="false">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</nav>
+
+<div id="nexo-view">
+<!-- ═══════════════════ MAIN ═══════════════════ -->
+<div class="main">
+
+  <!-- Calendar topbar -->
+  <header class="cal-topbar">
+    <button class="btn-today" id="btn-today">Hoje</button>
+
+    <button class="nav-arrow" id="btn-prev" aria-label="Mes anterior">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <button class="nav-arrow" id="btn-next" aria-label="Proximo mes">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <h1 class="month-title" id="month-title">Maio 2026</h1>
+
+  </header>
+
+  <div class="cal-body">
+  <div class="cal-area">
+
+  <!-- Weekday header row -->
+  <div class="cal-weekdays">
+    <div class="cal-wday">Dom</div>
+    <div class="cal-wday">Seg</div>
+    <div class="cal-wday">Ter</div>
+    <div class="cal-wday">Qua</div>
+    <div class="cal-wday">Qui</div>
+    <div class="cal-wday">Sex</div>
+    <div class="cal-wday">Sab</div>
+  </div>
+
+  <!-- Calendar grid — May 2026 (starts on Friday = col 6) -->
+  <div class="cal-grid" id="cal-grid">
+
+    <!-- Row 1 -->
+    <div class="cal-cell empty"></div><!-- DOM -->
+    <div class="cal-cell empty"></div><!-- SEG -->
+    <div class="cal-cell empty"></div><!-- TER -->
+    <div class="cal-cell empty"></div><!-- QUA -->
+    <div class="cal-cell empty"></div><!-- QUI -->
+
+    <div class="cal-cell"><!-- SEX 1 -->
+      <div class="day-num weekend">1</div>
+    </div>
+
+    <div class="cal-cell"><!-- SAB 2 -->
+      <div class="day-num weekend">2</div>
+    </div>
+
+    <!-- Row 2 -->
+    <div class="cal-cell"><!-- DOM 3 -->
+      <div class="day-num weekend">3</div>
+    </div>
+
+    <div class="cal-cell"><!-- SEG 4 -->
+      <div class="day-num">4</div>
+    </div>
+
+    <div class="cal-cell"><!-- TER 5 -->
+      <div class="day-num">5</div>
+    </div>
+
+    <div class="cal-cell"><!-- QUA 6 - Praca da Se -->
+      <div class="day-num">6</div>
+      <div class="event-chip accent" data-title="Praca da Se — Entrega de marmitas" data-sub="Distribuicao de refeicoes na Praca da Se, centro de Sao Paulo." data-tag="accent" data-taglabel="Recorrente" data-maps="Praça da Sé, São Paulo, SP">
+        <span class="chip-dot"></span>Entrega de marmitas
+      </div>
+    </div>
+
+    <div class="cal-cell"><!-- QUI 7 -->
+      <div class="day-num">7</div>
+    </div>
+
+    <div class="cal-cell"><!-- SEX 8 -->
+      <div class="day-num weekend">8</div>
+      <div class="event-chip teal" data-title="Tarde Musical — Banda do HSL" data-sub="13h na Casa de Clara. Musica ao vivo com a Banda do Hospital Sirio-Libanes." data-tag="teal" data-taglabel="Cultural" data-maps="Hospital Sírio-Libanês, São Paulo, SP">
+        <span class="chip-dot"></span>Tarde Musical
+      </div>
+      <div class="event-chip teal-soft" data-title="Congresso de Saude Humanitaria da FMUSP" data-sub="Dia 1 de 2. Evento de saude humanitaria promovido pela FMUSP." data-tag="teal" data-taglabel="Saude" data-maps="Faculdade de Medicina USP, São Paulo, SP">
+        <span class="chip-dot"></span>Congresso FMUSP
+      </div>
+    </div>
+
+    <div class="cal-cell"><!-- SAB 9 -->
+      <div class="day-num weekend">9</div>
+      <div class="event-chip teal-soft" data-title="Congresso de Saude Humanitaria da FMUSP" data-sub="Dia 2 de 2. Encerramento do congresso de saude humanitaria." data-tag="teal" data-taglabel="Saude" data-maps="Faculdade de Medicina USP, São Paulo, SP">
+        <span class="chip-dot"></span>Congresso FMUSP
+      </div>
+    </div>
+
+    <!-- Row 3 -->
+    <div class="cal-cell"><!-- DOM 10 -->
+      <div class="day-num weekend">10</div>
+    </div>
+
+    <div class="cal-cell"><!-- SEG 11 -->
+      <div class="day-num">11</div>
+    </div>
+
+    <div class="cal-cell"><!-- TER 12 -->
+      <div class="day-num">12</div>
+    </div>
+
+    <div class="cal-cell"><!-- QUA 13 - Praca da Se -->
+      <div class="day-num">13</div>
+      <div class="event-chip accent" data-title="Praca da Se — Entrega de marmitas" data-sub="Distribuicao de refeicoes na Praca da Se, centro de Sao Paulo." data-tag="accent" data-taglabel="Recorrente" data-maps="Praça da Sé, São Paulo, SP">
+        <span class="chip-dot"></span>Entrega de marmitas
+      </div>
+    </div>
+
+    <div class="cal-cell"><!-- QUI 14 -->
+      <div class="day-num">14</div>
+    </div>
+
+    <div class="cal-cell"><!-- SEX 15 -->
+      <div class="day-num weekend">15</div>
+    </div>
+
+    <div class="cal-cell"><!-- SAB 16 - Cestas -->
+      <div class="day-num weekend">16</div>
+      <div class="event-chip teal" data-title="Entrega de Cestas Basicas" data-sub="Distribuicao de cestas para familias em situacao de vulnerabilidade em Sao Paulo." data-tag="teal" data-taglabel="Doacao" data-maps="Parque Dom Pedro II, São Paulo, SP">
+        <span class="chip-dot"></span>Cestas Basicas
+      </div>
+    </div>
+
+    <!-- Row 4 -->
+    <div class="cal-cell"><!-- DOM 17 - Criancas -->
+      <div class="day-num weekend">17</div>
+      <div class="event-chip teal" data-title="Atividade com as Criancas" data-sub="Acoes sociais e recreativas para a criancada em regioes atendidas pela ONG MAIS." data-tag="teal" data-taglabel="Social" data-maps="ONG MAIS, São Paulo, SP">
+        <span class="chip-dot"></span>Atividade Criancas
+      </div>
+    </div>
+
+    <div class="cal-cell"><!-- SEG 18 -->
+      <div class="day-num">18</div>
+    </div>
+
+    <div class="cal-cell"><!-- TER 19 -->
+      <div class="day-num">19</div>
+    </div>
+
+    <div class="cal-cell"><!-- QUA 20 - Praca da Se -->
+      <div class="day-num">20</div>
+      <div class="event-chip accent" data-title="Praca da Se — Entrega de marmitas" data-sub="Distribuicao de refeicoes na Praca da Se, centro de Sao Paulo." data-tag="accent" data-taglabel="Recorrente" data-maps="Praça da Sé, São Paulo, SP">
+        <span class="chip-dot"></span>Entrega de marmitas
+      </div>
+    </div>
+
+    <div class="cal-cell"><!-- QUI 21 -->
+      <div class="day-num">21</div>
+    </div>
+
+    <div class="cal-cell"><!-- SEX 22 -->
+      <div class="day-num weekend">22</div>
+    </div>
+
+    <div class="cal-cell"><!-- SAB 23 -->
+      <div class="day-num weekend">23</div>
+    </div>
+
+    <!-- Row 5 -->
+    <div class="cal-cell"><!-- DOM 24 -->
+      <div class="day-num weekend">24</div>
+    </div>
+
+    <div class="cal-cell"><!-- SEG 25 -->
+      <div class="day-num">25</div>
+    </div>
+
+    <div class="cal-cell today-col"><!-- TER 26 — TODAY -->
+      <div class="day-num today">26</div>
+    </div>
+
+    <div class="cal-cell"><!-- QUA 27 - Praca da Se -->
+      <div class="day-num">27</div>
+      <div class="event-chip accent" data-title="Praca da Se — Entrega de marmitas" data-sub="Distribuicao de refeicoes na Praca da Se, centro de Sao Paulo." data-tag="accent" data-taglabel="Recorrente" data-maps="Praça da Sé, São Paulo, SP">
+        <span class="chip-dot"></span>Entrega de marmitas
+      </div>
+    </div>
+
+    <div class="cal-cell"><!-- QUI 28 - Bazar -->
+      <div class="day-num">28</div>
+      <div class="event-chip teal" data-title="Bazar na Casa de Assis" data-sub="Bazar solidario com renda revertida para as acoes sociais da ONG MAIS." data-tag="teal" data-taglabel="Bazar" data-maps="Casa de Assis, São Paulo, SP">
+        <span class="chip-dot"></span>Bazar Casa de Assis
+      </div>
+    </div>
+
+    <div class="cal-cell"><!-- SEX 29 -->
+      <div class="day-num weekend">29</div>
+    </div>
+
+    <div class="cal-cell"><!-- SAB 30 -->
+      <div class="day-num weekend">30</div>
+    </div>
+
+    <!-- Row 6 -->
+    <div class="cal-cell"><!-- DOM 31 -->
+      <div class="day-num weekend">31</div>
+    </div>
+
+    <div class="cal-cell empty"></div>
+    <div class="cal-cell empty"></div>
+    <div class="cal-cell empty"></div>
+    <div class="cal-cell empty"></div>
+    <div class="cal-cell empty"></div>
+    <div class="cal-cell empty"></div>
+
+  </div><!-- /cal-grid -->
+
+  </div><!-- /cal-area -->
+
+  <!-- ═══ PAINEL DIREITO ═══ -->
+  <aside class="detail-panel">
+
+    <div class="panel-heading">Ações do mês</div>
+
+    <div class="panel-event-item" data-title="Praca da Se — Entrega de marmitas" data-sub="Distribuicao de refeicoes na Praca da Se, centro de Sao Paulo. Toda terca-feira as 12h." data-tag="accent" data-taglabel="Recorrente" data-maps="Praça da Sé, São Paulo, SP">
+      <div class="panel-event-dot accent"></div>
+      <div class="panel-event-info">
+        <div class="panel-event-name">Entrega de marmitas</div>
+        <div class="panel-event-date">Toda terca-feira — Praca da Se</div>
+      </div>
+    </div>
+
+    <div class="panel-event-item" data-title="Tarde Musical — Banda do HSL" data-sub="13h na Casa de Clara. Musica ao vivo com a Banda do Hospital Sirio-Libanes. Entrada gratuita." data-tag="teal" data-taglabel="Cultural" data-maps="Hospital Sírio-Libanês, São Paulo, SP">
+      <div class="panel-event-dot teal"></div>
+      <div class="panel-event-info">
+        <div class="panel-event-name">Tarde Musical</div>
+        <div class="panel-event-date">8 mai — Casa de Clara</div>
+      </div>
+    </div>
+
+    <div class="panel-event-item" data-title="Congresso de Saude Humanitaria da FMUSP" data-sub="Evento de saude humanitaria promovido pela FMUSP. Dias 8 e 9 de maio." data-tag="teal" data-taglabel="Saude" data-maps="Faculdade de Medicina USP, São Paulo, SP">
+      <div class="panel-event-dot teal-soft"></div>
+      <div class="panel-event-info">
+        <div class="panel-event-name">Congresso FMUSP</div>
+        <div class="panel-event-date">8–9 mai — 2 dias</div>
+      </div>
+    </div>
+
+    <div class="panel-event-item" data-title="Entrega de Cestas Basicas" data-sub="Distribuicao de cestas para familias em situacao de vulnerabilidade em Sao Paulo." data-tag="teal" data-taglabel="Doacao" data-maps="Parque Dom Pedro II, São Paulo, SP">
+      <div class="panel-event-dot teal"></div>
+      <div class="panel-event-info">
+        <div class="panel-event-name">Cestas Basicas</div>
+        <div class="panel-event-date">16 mai — Distribuicao</div>
+      </div>
+    </div>
+
+    <div class="panel-event-item" data-title="Atividade com as Criancas" data-sub="Acoes sociais e recreativas para a criancada em regioes atendidas pela ONG MAIS." data-tag="teal" data-taglabel="Social" data-maps="ONG MAIS, São Paulo, SP">
+      <div class="panel-event-dot teal"></div>
+      <div class="panel-event-info">
+        <div class="panel-event-name">Atividade Criancas</div>
+        <div class="panel-event-date">17 mai — Acoes sociais</div>
+      </div>
+    </div>
+
+    <div class="panel-event-item" data-title="Bazar na Casa de Assis" data-sub="Bazar solidario com renda revertida para as acoes sociais da ONG MAIS." data-tag="teal" data-taglabel="Bazar" data-maps="Casa de Assis, São Paulo, SP">
+      <div class="panel-event-dot teal"></div>
+      <div class="panel-event-info">
+        <div class="panel-event-name">Bazar Casa de Assis</div>
+        <div class="panel-event-date">28 mai — Bazar solidario</div>
+      </div>
+    </div>
+
+    <div class="panel-divider"></div>
+
+    <!-- Detalhe do evento selecionado -->
+    <div class="panel-detail" id="panel-detail">
+      <span class="panel-detail-tag" id="panel-detail-tag"></span>
+      <div class="panel-detail-title" id="panel-detail-title"></div>
+      <div class="panel-detail-sub" id="panel-detail-sub"></div>
+      <button class="panel-detail-btn">Quero participar</button>
+    </div>
+
+  </aside>
+
+  </div><!-- /cal-body -->
+
+</div><!-- /main -->
+
+<!-- Event popover -->
+<div class="popover" id="popover" role="dialog" aria-modal="true">
+  <button class="popover-close" id="popover-close" aria-label="Fechar">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </button>
+  <div class="popover-title" id="popover-title"></div>
+  <div class="popover-sub" id="popover-sub"></div>
+  <span class="popover-tag" id="popover-tag"></span>
+</div>
+
+<script>
+  // ── Event detail panel ──
+  const panelDetail      = document.getElementById('panel-detail');
+  const panelDetailTitle = document.getElementById('panel-detail-title');
+  const panelDetailSub   = document.getElementById('panel-detail-sub');
+  const panelDetailTag   = document.getElementById('panel-detail-tag');
+
+  let currentMapsQuery = '';
+
+  function openDetail(title, sub, tag, taglabel, maps, sourceEl) {
+    window.SFX?.play('eventOpen');
+    currentMapsQuery = maps || '';
+    panelDetailTitle.textContent = title;
+    panelDetailSub.textContent   = sub;
+    panelDetailTag.textContent   = taglabel;
+    panelDetailTag.className     = 'panel-detail-tag ' + tag;
+    panelDetail.classList.remove('visible');
+    void panelDetail.offsetWidth; // force reflow for animation replay
+    panelDetail.classList.add('visible');
+    document.querySelectorAll('.panel-event-item.selected').forEach(el => el.classList.remove('selected'));
+    if (sourceEl) sourceEl.classList.add('selected');
+  }
+
+  // Chips do calendario
+  document.querySelectorAll('.event-chip').forEach(chip => {
+    chip.addEventListener('click', e => {
+      e.stopPropagation();
+      openDetail(chip.dataset.title, chip.dataset.sub, chip.dataset.tag, chip.dataset.taglabel, chip.dataset.maps, null);
+    });
+  });
+
+  // Cards do painel lateral
+  document.querySelectorAll('.panel-event-item').forEach(item => {
+    item.addEventListener('click', () => {
+      openDetail(item.dataset.title, item.dataset.sub, item.dataset.tag, item.dataset.taglabel, item.dataset.maps, item);
+    });
+  });
+
+  // Popover (mantido como fallback em mobile)
+  const popover      = document.getElementById('popover');
+  const popoverTitle = document.getElementById('popover-title');
+  const popoverSub   = document.getElementById('popover-sub');
+  const popoverTag   = document.getElementById('popover-tag');
+  const popoverClose = document.getElementById('popover-close');
+  popoverClose.addEventListener('click', () => popover.classList.remove('open'));
+  document.addEventListener('click', e => {
+    if (!popover.contains(e.target)) popover.classList.remove('open');
+  });
+  popover.addEventListener('click', e => e.stopPropagation());
+
+  // ── Dummy nav buttons (visual only for this static demo) ──
+  document.getElementById('btn-today').addEventListener('click', () => {
+    window.SFX?.play('calendarNav');
+    document.querySelector('.day-num.today')
+      ?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  });
+  document.getElementById('btn-prev').addEventListener('click', () => window.SFX?.play('calendarNav'));
+  document.getElementById('btn-next').addEventListener('click', () => window.SFX?.play('calendarNav'));
+  document.querySelector('.panel-detail-btn').addEventListener('click', () => {
+    window.SFX?.play('participate');
+    if (currentMapsQuery) {
+      window.open('https://maps.google.com/?q=' + encodeURIComponent(currentMapsQuery), '_blank', 'noopener,noreferrer');
+    }
+  });
+</script>
+
+</div><!-- /nexo-view -->
+<script src="sounds.js"></script>
+<script src="navbar.js"></script>
+<script src="router.js"></script>
+
+</body>
+</html>
