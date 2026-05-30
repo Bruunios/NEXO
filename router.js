@@ -42,6 +42,19 @@
           }
         });
 
+        // Swap inline <style> blocks from the new page
+        var newStyles = Array.from(doc.querySelectorAll('head style'));
+        var curStyles = Array.from(document.querySelectorAll('head style'));
+        newStyles.forEach(function (style, i) {
+          if (curStyles[i]) {
+            curStyles[i].textContent = style.textContent;
+          } else {
+            var el = document.createElement('style');
+            el.textContent = style.textContent;
+            document.head.appendChild(el);
+          }
+        });
+
         // Swap view content
         var newView = doc.getElementById('nexo-view');
         if (newView) view.innerHTML = newView.innerHTML;
